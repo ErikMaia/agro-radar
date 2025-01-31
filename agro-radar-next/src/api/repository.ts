@@ -10,15 +10,17 @@ export class RepositoryApi{
     private readonly gatewayUrl: string;
 
     constructor(){
-        this.baseUrl = "localhost:3000/api";
-        this.loginUrl = 'http://localhost:8080/api/auth/login';
+        
+        this.baseUrl = "http://192.168.3.9:8080/api";
+        this.loginUrl = `${this.baseUrl}/auth/login`;
         this.sensorUrl = `${this.baseUrl}/sensores`;
-        this.gatewayUrl = `${this.baseUrl}/gateway`
+        this.gatewayUrl = `${this.baseUrl}/gateway`;
     }
 
     private readonly getData = async (query:string) => {
         const data = await fetch(query)
         const result = await data.json();
+        console.log(result);
         return result;
     }
     
@@ -28,11 +30,8 @@ export class RepositoryApi{
         return data.data;
     }
 
-    /**
-     * createSensor
-     */
     public async createSensor(sensor: SensorDto) {
-        const response = await axios.post(this.sensorUrl,sensor,)
+        const response = await axios.post(this.sensorUrl,sensor,);
         return response;
     }
     public getOneSensor =  async (id:number) =>{

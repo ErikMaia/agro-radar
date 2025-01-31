@@ -4,11 +4,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/auth/login";
+const API_URL = "http://192.168.9:8080/api/auth/login";
 
 // Configuração base do axios
 const api = axios.create({
-  baseURL: 'http://localhost:8080',
+  baseURL: 'http://192.168.9:8080',
   headers: {
     'Content-Type': 'application/json',
     'Accept': '/*'

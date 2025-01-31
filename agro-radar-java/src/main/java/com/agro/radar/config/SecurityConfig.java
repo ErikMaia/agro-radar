@@ -39,8 +39,8 @@ public class SecurityConfig {
         .csrf(csrf -> csrf.disable())
         .cors(withDefaults())
         .authorizeHttpRequests(requests -> requests
-            .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
-            .requestMatchers("/api/gateways/**").authenticated() // Somente os endpoints de gateways requerem autenticação
+            // .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
+            // .requestMatchers("/api/gateways/**").authenticated() // Somente os endpoints de gateways requerem autenticação
             .anyRequest().permitAll() // Outros endpoints são públicos por padrão
         )
         .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
