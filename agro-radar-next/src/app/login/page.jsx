@@ -3,38 +3,23 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-
-const API_URL = "http://192.168.9:8080/api/auth/login";
-
-// Configuração base do axios
-const api = axios.create({
-  baseURL: 'http://192.168.9:8080',
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': '/*'
-  }
-});
-
-api.interceptors.request.use((config) => {
-  config.headers['Access-Control-Allow-Origin'] = '*';
-  return config;
-});
+import repository from "@/api/repository";
 
 export default function Home() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
     senha: "",
-    remember: false
+    remember: false,
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: type === "checkbox" ? checked : value,
     }));
   };
 
@@ -43,45 +28,32 @@ export default function Home() {
     setLoading(true);
     setError("");
 
-    console.log(formData)
+    console.log(formData);
 
     try {
-      const response = await api.post('/api/auth/login', {
-        email: formData.email,
-        senha: formData.senha
-      }, {
-        headers: {
-          "Accept": "application/json",
-          "Content-Type": "application/json"
-        }
-      });
-      console.log(response);
-
+      const response = await repository.getLogin(formData.email, formData.senha);
+      console.warn(response);
       // Se chegou aqui, o login foi bem-sucedido
-      const { token } = response.data;
+      const { token } = response;
 
       if (token) {
         // Armazena o token
         localStorage.setItem("token", token);
-        
+
         if (formData.remember) {
           localStorage.setItem("rememberedEmail", formData.email);
         } else {
           localStorage.removeItem("rememberedEmail");
         }
 
-        // Configura o token para futuras requisições
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-
         // Redireciona para a página de mapas
-        router.push("/maps");
+        router.push("/sensor");
       } else {
         throw new Error("Token não recebido do servidor");
       }
-
     } catch (error) {
       console.error("Erro detalhado:", error);
-      
+
       if (axios.isAxiosError(error)) {
         if (error.response) {
           // O servidor respondeu com um status diferente de 2xx
@@ -102,30 +74,10 @@ export default function Home() {
     }
   };
 
-  // Verifica se a API está acessível
-  useEffect(() => {
-    const checkAPI = async () => {
-      try {
-        await api.options('/api/auth/login');
-        console.log('API está acessível');
-      } catch (error) {
-        console.warn('API não está acessível:', error);
-      }
-    };
-
-    checkAPI();
-  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#f3f4f6]">
       <div className="max-w-sm w-full bg-white p-8 rounded-lg shadow-lg">
-        {/* Mensagem de debug para desenvolvimento */}
-        {process.env.NODE_ENV === 'development' && error && (
-          <div className="mb-4 p-2 bg-yellow-50 text-yellow-800 text-xs rounded">
-            Debug: Tentando conectar em {API_URL}
-          </div>
-        )}
-
         <div className="text-center mb-8">
           <h1 className="text-3xl font-semibold text-gray-800">AgroRadar</h1>
           <p className="text-gray-600">Use sua conta AgroRadar</p>
@@ -145,6 +97,7 @@ export default function Home() {
               value={formData.email}
               onChange={handleInputChange}
               required
+              aria-required="true"
             />
           </div>
 
@@ -161,6 +114,7 @@ export default function Home() {
               value={formData.senha}
               onChange={handleInputChange}
               required
+              aria-required="true"
             />
           </div>
 
@@ -179,6 +133,7 @@ export default function Home() {
                 checked={formData.remember}
                 onChange={handleInputChange}
                 className="h-4 w-4 border-gray-300 rounded text-blue-600 focus:ring-blue-500"
+                aria-checked="false"
               />
               <label htmlFor="remember" className="ml-2 text-sm text-gray-600">
                 Lembrar de mim
@@ -193,9 +148,7 @@ export default function Home() {
             type="submit"
             disabled={loading}
             className={`w-full py-3 px-4 text-white rounded-md transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 
-              ${loading 
-                ? "bg-blue-400 cursor-not-allowed" 
-                : "bg-blue-600 hover:bg-blue-700"}`}
+              ${loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
           >
             {loading ? (
               <span className="flex items-center justify-center">

@@ -1,45 +1,16 @@
 'use client'
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import axios from 'axios';
-import "../../../public/styles/Form.css";
+import "../../../../public/styles/Form.css";
 import { useRouter } from "next/navigation";
-import { RepositoryApi } from '@/api/repository';
 
-type Props = {
-    params: Promise<{
-      id: number;
-    }>;
-  };
-
-export default function EditSensor(props: Readonly<Props>) {
+export default function CreateSensor() {
   const router = useRouter();
   const [valor, setValor] = useState(0);
   const [desc, setDesc] = useState("");
   const [tipoSensor, setTipoSensor] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [id,setId] = useState<number>(0);
-  props.params.then((values)=>{
-    setId(values.id);
-  }).then(()=>{
-    const repository = new RepositoryApi();
-    repository.getOneSensor(id).then((response)=>{
-        setValor(response.valor!);
-        setDesc(response.dispositivoNome!);
-        setTipoSensor(response.tipoSensor!);
-        setLoading(true);
-    })
-  });
-  
-  useEffect(()=>{
-    const repository = new RepositoryApi();
-    repository.getOneSensor(id).then((response)=>{
-        setValor(response.valor!);
-        setDesc(response.dispositivoNome!);
-        setTipoSensor(response.tipoSensor!);
-        setLoading(true);
-    })
-  },[])
 
   const handleSave = async () => {
     try {
@@ -59,7 +30,7 @@ export default function EditSensor(props: Readonly<Props>) {
         timestamp: new Date().toISOString()
       };
 
-      const response = await axios.put(
+      const response = await axios.post(
         'http://localhost:8080/api/sensores',
         sensorData,
         {
@@ -70,8 +41,10 @@ export default function EditSensor(props: Readonly<Props>) {
         }
       );
 
-      if (response.status < 300) {
-        alert('Sensor Alterado com sucesso!');
+      if (response.status === 200
+        
+      ) {
+        alert('Sensor criado com sucesso!');
         router.push('/maps');
       } else {
         setError('Erro ao criar sensor');
@@ -85,7 +58,7 @@ export default function EditSensor(props: Readonly<Props>) {
   return (
     <main className="container">
       <div className="form-card">
-        <h1>Edição do Sensor</h1>
+        <h1>Criar Sensor</h1>
         {error && (
           <div className="error-message" style={{ color: 'red', marginBottom: '1rem' }}>
             {error}
