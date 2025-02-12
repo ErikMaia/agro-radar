@@ -17,7 +17,7 @@ class RepositoryApi {
         this.baseUrl = "http://localhost:8080/api";
         this.loginUrl = `${this.baseUrl}/auth/login`;
         this.sensorUrl = `${this.baseUrl}/sensores`;
-        this.gatewayUrl = `${this.baseUrl}/gateway`;
+        this.gatewayUrl = `${this.baseUrl}/gateways`;
         this.dispositivoUrl = `${this.baseUrl}/dispositivos`;
     }
 
@@ -60,8 +60,8 @@ class RepositoryApi {
         return data;
     }
 
-    public createGateway(gateway: GateWayDto) {
-        return axios.post(this.gatewayUrl, gateway, {
+    public async createGateway(gateway: GateWayDto) {
+        return await axios.post(this.gatewayUrl, gateway, {
             headers: {
                 'Content-Type': 'application/json',
                 'accept': '*/*'

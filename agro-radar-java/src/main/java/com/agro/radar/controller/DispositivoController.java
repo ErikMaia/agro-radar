@@ -41,6 +41,8 @@ public class DispositivoController {
     public DispositivoDTO buscarPorId(@PathVariable Long id) {
         Dispositivo dispositivo = dispositivoService.buscarPorId(id)
                 .orElseThrow(() -> new RuntimeException("Dispositivo não encontrado"));
+        
+        dispositivo.getSensores().size();
         return new DispositivoDTO(dispositivo);
     }
 
